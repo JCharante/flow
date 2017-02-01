@@ -154,4 +154,4 @@ def users_last_login(aid: str):
 
 print(f'Database file located at: {config.path_to_db}')
 
-app.run(debug=True, host='0.0.0.0', port=3234)
+app.run(debug=True, host='0.0.0.0', port=8881)

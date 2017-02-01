@@ -1,6 +1,10 @@
 flow - Client Server
 ===========
 
+## -2. Ports Used:
+
+8882
+
 ## -1. Preface:
 
 These commands have only been tested on 16.04 & 16.10 but that doesn't mean that they won't work on other distros.
