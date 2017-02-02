@@ -3,7 +3,7 @@ flow - queue
 
 ## 1. Ports Used:
 
-* 8883 (restful api)
+* 8881 (restful api)
 * 8884 (websocket)
 
 ## 2. Preface:
@@ -24,10 +24,28 @@ Then on Ubuntu 16.[04/10]:
 
 ```
 sudo apt-get update
-sudo apt install python3.6 virtualenv;
+sudo apt install python3.6 virtualenv mysql-server pymysql
 ```
 
-## 4. Python Requirements
+When prompted for a root username & password, I usu `root` & `root` `¯\_(ツ)_/¯`
+
+## 4. Database Setup
+
+Now that you have mysql, you should create the user that the servers will use.
+
+In this example, we'll use `'queue'@'localhost'`, with the password `queue`
+
+```
+$ mysql -u root -p
+Enter Password: root
+mysql> CREATE USER 'queue'@'localhost' IDENTIFIED BY 'queue';
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'queue'@'localhost';
+mysql> FLUSH PRIVILEGES;
+mysql> create database queue;
+mysql> quit;
+```
+
+## 5. Python Requirements
 
 If on Ubuntu 16.[04/10]:
 
@@ -38,8 +56,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 5. Run
+## 6. Run
 
 ```
-python server.py
+python server_rest.py
 ```

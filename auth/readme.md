@@ -1,15 +1,16 @@
-flow - Auth
+flow - queue
 ===========
 
-## -2. Ports Used:
+## 1. Ports Used:
 
-8881
+* 8883 (restful api)
+* 8884 (websocket)
 
-## -1. Preface:
+## 2. Preface:
 
 These commands have only been tested on 16.04 & 16.10 but that doesn't mean that they won't work on other distros.
 
-## 0. Software Requirements:
+## 3. Software Requirements:
 
 ### To install Python 3.6 and virtualenv
 
@@ -23,21 +24,39 @@ Then on Ubuntu 16.[04/10]:
 
 ```
 sudo apt-get update
-sudo apt install python3.6 virtualenv;
+sudo apt install python3.6 virtualenv mysql-server pymysql
 ```
 
-## 1. Python Requirements
+When prompted for a root username & password, I usu `root` & `root` `¯\_(ツ)_/¯`
+
+## 4. Database Setup
+
+Now that you have mysql, you should create the user that the servers will use.
+
+In this example, we'll use `'queue'@'localhost'`, with the password `queue`
+
+```
+$ mysql -u root -p
+Enter Password: root
+mysql> CREATE USER 'queue'@'localhost' IDENTIFIED BY 'queue';
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'queue'@'localhost';
+mysql> FLUSH PRIVILEGES;
+mysql> create database queue;
+mysql> quit;
+```
+
+## 5. Python Requirements
 
 If on Ubuntu 16.[04/10]:
 
 ```
-cd flow/auth
+cd flow/queue
 virtualenv -p python3.6 .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 2. Run
+## 6. Run
 
 ```
 python server.py
