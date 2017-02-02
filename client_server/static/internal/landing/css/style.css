@@ -1,0 +1,13 @@
+#call-to-action-button-div {
+    width: 100%;
+    text-align: center;
+    margin-top: 20%;
+}
+
+#call-to-action-button {
+    display: inline-block;
+}
+
+.container {
+    height: 100%;
+}

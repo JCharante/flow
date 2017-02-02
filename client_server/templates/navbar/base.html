@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='external/css/materialize.min.css') }}">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='internal/navbar/css/style.css') }}">
+	{% block head %} {% endblock %}
+</head>
+<body class="light-blue lighten-5">
+<!-- Dropdown Structure -->
+<ul id="dropdown1" class="dropdown-content">
+
+</ul>
+<nav>
+	<div class="nav-wrapper light-blue lighten-2">
+		<a href="#" class="brand-logo" id="nav-brand-logo">flow</a>
+		<ul class="right hide-on-med-and-down">
+			<li><a href="#">My Groups</a></li>
+			<!-- Dropdown Trigger -->
+			<li>
+				<a class="dropdown-button" href="#" data-activates="dropdown1">
+					Account<i class="material-icons right">arrow_drop_down</i>
+				</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+{% block body %} {%  endblock %}
+
+<script src="{{ url_for('static', filename='external/js/jquery-2.1.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='external/js/materialize.min.js') }}"></script>
+<script src="{{ url_for('static', filename='internal/util/js/aid.js') }}"></script>
+<script src="{{ url_for('static', filename='internal/util/js/get_auth_server_address.js') }}"></script>
+<script src="{{ url_for('static', filename='internal/navbar/js/script.js') }}"></script>
+</body>
+</html>
