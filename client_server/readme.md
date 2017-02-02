@@ -1,15 +1,15 @@
 flow - Client Server
 ===========
 
-## -2. Ports Used:
+## 1. Ports Used:
 
 8882
 
-## -1. Preface:
+## 2. Preface:
 
 These commands have only been tested on 16.04 & 16.10 but that doesn't mean that they won't work on other distros.
 
-## 0. Software Requirements:
+## 3. Software Requirements:
 
 ### To install Python 3.6 and virtualenv
 
@@ -26,7 +26,7 @@ sudo apt-get update
 sudo apt install python3.6 virtualenv;
 ```
 
-## 1. Python Requirements
+## 4. Python Requirements
 
 If on Ubuntu 16.[04/10]:
 
@@ -37,7 +37,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 2. Run
+## 5. Run
 
 ```
 python server.py
