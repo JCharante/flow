@@ -3,11 +3,11 @@ import db_functions
 import config
 import util
 import exceptions
-import json
+from settings import Settings
 
 app = Flask(__name__)
 
-public_address = json.load(open(util.path_to_this_files_directory() + 'settings.json')).get('public_address', '')
+settings = Settings()
 
 
 def home_cor(obj):
@@ -31,7 +31,7 @@ def root():
 	if request.method == 'GET':
 		response = {
 			'endpoints': {
-				'users': public_address + '/users/aid_here',
+				'users': settings.public_address + '/users/aid_here',
 			}
 		}
 		return home_cor(jsonify(**response))
@@ -44,13 +44,15 @@ def users(aid: str):
 	if request.method == 'GET':
 		response = {
 			'endpoints': {
-				'username': public_address + f'/users/<aid>/username',
-				'last_login': public_address + '/users/<aid>/last_login',
-				'join': public_address + '/users/join?username=UsernameHere&password=PasswordHere',
-				'login': public_address + '/users/login?username=UsernameHere&password=PasswordHere',
-				'number_of_users': public_address + '/users/quantity'
+				'username': settings.public_address + f'/users/<aid>/username',
+				'last_login': settings.public_address + '/users/<aid>/last_login',
+				'join': settings.public_address + '/users/join?username=UsernameHere&password=PasswordHere',
+				'login': settings.public_address + '/users/login?username=UsernameHere&password=PasswordHere',
+				'number_of_users': settings.public_address + '/users/quantity'
 			}
 		}
+		if settings.dev_mode:
+			response['endpoints']['wipe_users'] = settings.public_address + '/users/wipe'
 		return home_cor(jsonify(**response))
 	else:
 		return home_cor(jsonify(**{}))
@@ -123,10 +125,16 @@ def users_login():
 
 @app.route('/users/wipe')
 def users_wipe():
-	db_functions.wipe_users()
-	return home_cor(jsonify(**{
-		'status': 'success'
-	}))
+	if settings.dev_mode:
+		db_functions.wipe_users()
+		return home_cor(jsonify(**{
+			'success': True
+		}))
+	else:
+		return home_cor(jsonify(**{
+			'success': False,
+			'error': 'not running in dev mode'
+		}))
 
 
 @app.route('/users/quantity')
@@ -169,6 +177,6 @@ def users_last_login(aid: str):
 	else:
 		return home_cor(jsonify(**{}))
 
-print(f'Database file located at: {config.path_to_db}')
+print(f'Using Database: {config.path_to_db}')
 
 app.run(debug=True, host='0.0.0.0', port=8881)
