@@ -78,14 +78,18 @@ def users_join():
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:
-			username = data.get('username', None)
-			password = data.get('password', None)
-			if username is not None and password is not None:
+			username = data.get('username', '')
+			password = data.get('password', '')
+			try:
 				db_response = db_functions.create_user(username, password)
-				if db_response[0]:
-					response['status'] = 'Success'
-					response['aid'] = db_response[1]
-					return home_cor(jsonify(**response))
+			except exceptions.UsernameNotUniqueException:
+				return http_401('Username Taken.')
+			except exceptions.InsecurePasswordException:
+				return http_401('Insecure Password Used')
+			else:
+				response['status'] = 'Success'
+				response['aid'] = db_response
+				return home_cor(jsonify(**response))
 		return http_401()
 
 
