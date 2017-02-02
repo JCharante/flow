@@ -5,6 +5,9 @@ import config
 
 Base = declarative_base()
 
+# The naming convention for {table_name}V{table_version} will be used once we finish the mvp. Until then they will stay
+# at V1 and you will have to continue to drop the tables.
+
 
 class UserV1(Base):
 	__tablename__ = 'UserV1'
@@ -21,6 +24,7 @@ class GroupV1(Base):
 	group_id = Column(String(36))
 	name = Column(String(100))
 	owner_aid = Column(String(36))
+	invite_code = Column(String(6))
 
 
 class GroupMemberV1(Base):

@@ -85,10 +85,12 @@ def create_group(owner_aid: str, group_name: str):
 	if valid_aid(owner_aid) is False:
 		raise exceptions.InvalidAid()
 	group_id = str(uuid.uuid4())
+	invite_code = generate_unique_group_invite_code()
 	session.add(GroupV1(
 		group_id=group_id,
 		owner_aid=owner_aid,
-		name=group_name
+		name=group_name,
+		invite_code=invite_code
 	))
 	session.commit()
 	session.add(GroupMemberV1(
@@ -97,3 +99,22 @@ def create_group(owner_aid: str, group_name: str):
 	))
 	session.commit()
 	return group_id
+
+
+def generate_unique_group_invite_code():
+	invite_code = util.generate_alphanumeric_string(6)
+	while invite_code_is_unique(invite_code) is False:
+		invite_code = util.generate_alphanumeric_string(6)
+	return invite_code
+
+
+def invite_code_is_unique(invite_code: str):
+	row = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
+	return row is None
+
+
+def get_invite_code(group_id: str):
+	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
+	if group is None:
+		raise exceptions.InvalidGroupId()
+	return group.invite_code
