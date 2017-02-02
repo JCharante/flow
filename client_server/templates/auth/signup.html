@@ -5,7 +5,7 @@
 	<title>flow - Signup</title>
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='external/css/materialize.min.css') }}">
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='internal/auth/register/css/style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='internal/auth/css/signup.css') }}">
 </head>
 <body>
 <div class="container">
@@ -39,6 +39,8 @@
 
 <script src="{{ url_for('static', filename='external/js/jquery-2.1.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='external/js/materialize.min.js') }}"></script>
-<script src="{{ url_for('static', filename='internal/auth/register/js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='internal/util/js/aid.js') }}"></script>
+<script src="{{ url_for('static', filename='internal/util/js/get_auth_server_address.js') }}"></script>
+<script src="{{ url_for('static', filename='internal/auth/js/signup.js') }}"></script>
 </body>
 </html>
