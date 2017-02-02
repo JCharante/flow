@@ -4,7 +4,7 @@ from db_setup import UserV1, Base, GroupV1, GroupMemberV1
 import util
 import config
 import uuid
-from typing import Tuple
+from typing import Tuple, List, Dict
 from datetime import datetime
 import exceptions
 
@@ -143,3 +143,23 @@ def join_group(aid: str, group_id):
 def is_valid_group_id(group_id: str):
 	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
 	return group is not None
+
+
+def groups_user_is_in(aid: str) -> List[Dict]:
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	groups = []
+	for group_member in session.query(GroupMemberV1).filter(GroupMemberV1.member_aid == aid).all():
+		group = session.query(GroupV1).filter(GroupV1.group_id == group_member.group_id).first()
+		if group is not None:
+			group = group  # type: GroupV1
+			try:
+				group_owner_username = get_username(group.owner_aid)
+			except exceptions.InvalidAid:
+				group_owner_username = 'Error Fetching Owner'
+			groups.append({
+				'name': group.name,
+				'group_id': group.group_id,
+				'owner': group_owner_username
+			})
+	return groups

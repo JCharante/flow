@@ -239,6 +239,21 @@ def users_last_login(aid: str):
 		return home_cor(jsonify(**{}))
 
 
+@app.route('/users/<aid>/groups', methods=['OPTIONS', 'GET'])
+def users_aid_groups(aid: str):
+	if request.method == 'GET':
+		response = {}
+		try:
+			groups = db_functions.groups_user_is_in(aid)
+		except exceptions.InvalidAid:
+			return http_401('Invalid AID')
+		else:
+			response['groups'] = groups
+		return home_cor(jsonify(**response))
+	else:
+		return home_cor(jsonify(**{}))
+
+
 print(f'Using Database: {config.path_to_db}')
 
 app.run(debug=True, host='0.0.0.0', port=8881)
