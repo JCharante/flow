@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import UserV1, Base
+from db_setup import UserV1, Base, GroupV1, GroupMemberV1
 import util
 import config
 import uuid
@@ -79,3 +79,21 @@ def number_of_users():
 def wipe_users():
 	session.query(UserV1).filter(True).delete()
 	session.commit()
+
+
+def create_group(owner_aid: str, group_name: str):
+	if valid_aid(owner_aid) is False:
+		raise exceptions.InvalidAid()
+	group_id = str(uuid.uuid4())
+	session.add(GroupV1(
+		group_id=group_id,
+		owner_aid=owner_aid,
+		name=group_name
+	))
+	session.commit()
+	session.add(GroupMemberV1(
+		group_id=group_id,
+		member_aid=owner_aid
+	))
+	session.commit()
+	return group_id
