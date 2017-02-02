@@ -4,7 +4,7 @@ flow - queue
 ## 1. Ports Used:
 
 * 8881 (restful api)
-* 8884 (websocket)
+* 8883 (websocket)
 
 ## 2. Preface:
 
