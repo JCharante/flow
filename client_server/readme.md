@@ -1,9 +1,9 @@
-flow - Auth
+flow - Client Server
 ===========
 
 ## -2. Ports Used:
 
-8881
+8882
 
 ## -1. Preface:
 
@@ -31,7 +31,7 @@ sudo apt install python3.6 virtualenv;
 If on Ubuntu 16.[04/10]:
 
 ```
-cd flow/auth
+cd flow/client_server
 virtualenv -p python3.6 .venv
 source .venv/bin/activate
 pip install -r requirements.txt
