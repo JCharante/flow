@@ -72,12 +72,9 @@ def users_join():
 		except exceptions.InsecurePasswordException:
 			return http_401('Insecure Password Used')
 		else:
-			if db_response[0]:
-				response['status'] = 'Success'
-				response['aid'] = db_response[1]
-				return home_cor(jsonify(**response))
-			else:
-				return http_401('Username Taken.')
+			response['status'] = 'Success'
+			response['aid'] = db_response
+			return home_cor(jsonify(**response))
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:
