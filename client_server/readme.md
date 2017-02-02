@@ -32,7 +32,7 @@ If on Ubuntu 16.[04/10]:
 
 ```
 cd flow/client_server
-virtualenv -p python 3.6 .venv
+virtualenv -p python3.6 .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
