@@ -118,3 +118,28 @@ def get_invite_code(group_id: str):
 	if group is None:
 		raise exceptions.InvalidGroupId()
 	return group.invite_code
+
+
+def join_group_through_invite_link(aid: str, invite_code: str):
+	group = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
+	if group is None:
+		raise exceptions.InvalidGroupInviteCode()
+	group = group  # type: GroupV1
+	join_group(aid, group.group_id)
+
+
+def join_group(aid: str, group_id):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	if is_valid_group_id(group_id) is False:
+		raise exceptions.InvalidGroupId()
+	session.add(GroupMemberV1(
+		group_id=group_id,
+		member_aid=aid
+	))
+	session.commit()
+
+
+def is_valid_group_id(group_id: str):
+	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
+	return group is not None

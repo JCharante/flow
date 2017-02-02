@@ -66,6 +66,24 @@ def groups_create():
 		return home_cor(jsonify(**{}))
 
 
+@app.route('/groups/join/<invite_code>', methods=['OPTIONS', 'GET'])
+def groups_join(invite_code):
+	if request.method == 'GET':
+		response = {}
+		aid = request.args.get('aid', '')
+		try:
+			db_functions.join_group_through_invite_link(aid, invite_code)
+		except exceptions.InvalidAid:
+			return http_401('Invalid AID')
+		except exceptions.InvalidGroupInviteCode:
+			return http_401('Invalid Invite Code')
+		else:
+			response['success'] = True
+		return home_cor(jsonify(**response))
+	elif request.method == 'OPTIONS':
+		return home_cor(jsonify(**{}))
+
+
 @app.route('/groups/<group_id>/invite_code', methods=['OPTIONS', 'GET'])
 def groups_group_id(group_id):
 	if request.method == 'GET':
@@ -219,6 +237,7 @@ def users_last_login(aid: str):
 			return home_cor(jsonify(**response))
 	else:
 		return home_cor(jsonify(**{}))
+
 
 print(f'Using Database: {config.path_to_db}')
 

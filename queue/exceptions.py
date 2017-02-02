@@ -12,3 +12,7 @@ class UsernameNotUniqueException(Exception):
 
 class InvalidGroupId(Exception):
 	pass
+
+
+class InvalidGroupInviteCode(Exception):
+	pass
