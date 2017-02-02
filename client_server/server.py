@@ -19,7 +19,7 @@ def auth_login():
 	return render_template('auth/login.html')
 
 
-@app.route('/auth/register')
+@app.route('/auth/signup')
 def auth_signup():
 	return render_template('auth/signup.html')
 
