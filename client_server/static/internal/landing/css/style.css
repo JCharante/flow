@@ -1,0 +1,13 @@
+#play-button-div {
+    width: 100%;
+    text-align: center;
+    margin-top: 20%;
+}
+
+#play-button {
+    display: inline-block;
+}
+
+.container {
+    height: 100%;
+}

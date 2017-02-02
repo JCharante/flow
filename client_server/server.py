@@ -14,6 +14,11 @@ def home_cor(obj):
 	return return_response
 
 
+@app.route('/')
+def landing():
+	return render_template('landing/index.html')
+
+
 @app.route('/auth/login')
 def auth_login():
 	return render_template('auth/login.html')
