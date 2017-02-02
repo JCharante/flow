@@ -10,3 +10,7 @@ function hasAnAidValue() {
 function setAID(aid) {
 	localStorage.setItem('aid', aid)
 }
+
+function getAID() {
+	return localStorage.getItem('aid')
+}
