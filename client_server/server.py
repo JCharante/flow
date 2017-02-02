@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, make_response, abort, Response, render_template
-import os
-import json
+from settings import Settings
 import util
 
 app = Flask(__name__)
+settings = Settings()
 
 
 def home_cor(obj):
@@ -37,6 +37,13 @@ def version():
 		return home_cor(jsonify(**{
 			"git_version": util.get_git_revision_short_hash()
 		}))
+
+
+@app.route('/urls')
+def urls():
+	return home_cor(jsonify(**{
+		'auth_server_address': settings.auth_server_address
+	}))
 
 
 app.run(debug=True, host='0.0.0.0', port=8882, threaded=True)
