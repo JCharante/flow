@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import UserV1, Base
+from db_setup import UserV1, Base, GroupV1, GroupMemberV1
 import util
 import config
 import uuid
@@ -36,7 +36,7 @@ def login(username: str, password: str) -> Tuple[bool, str]:
 	if stored_user is None:
 		return False, "username doesn't exist"
 	stored_password = stored_user.hashed_password
-	if util.encrypt_password(stored_password, password) == stored_password:
+	if util.checkpw(stored_password, password):
 		update_last_login(stored_user.aid)
 		return True, stored_user.aid
 	else:
@@ -70,3 +70,30 @@ def get_last_login(aid: str) -> str:
 		return row.last_login
 	else:
 		raise exceptions.InvalidAid()
+
+
+def number_of_users():
+	return session.query(UserV1).count()
+
+
+def wipe_users():
+	session.query(UserV1).filter(True).delete()
+	session.commit()
+
+
+def create_group(owner_aid: str, group_name: str):
+	if valid_aid(owner_aid) is False:
+		raise exceptions.InvalidAid()
+	group_id = str(uuid.uuid4())
+	session.add(GroupV1(
+		group_id=group_id,
+		owner_aid=owner_aid,
+		name=group_name
+	))
+	session.commit()
+	session.add(GroupMemberV1(
+		group_id=group_id,
+		member_aid=owner_aid
+	))
+	session.commit()
+	return group_id
