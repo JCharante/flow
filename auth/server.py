@@ -74,7 +74,7 @@ def users_join():
 		else:
 			if db_response[0]:
 				response['status'] = 'Success'
-				response['uid'] = db_response[1]
+				response['aid'] = db_response[1]
 				return home_cor(jsonify(**response))
 			else:
 				return http_401('Username Taken.')
@@ -87,7 +87,7 @@ def users_join():
 				db_response = db_functions.create_user(username, password)
 				if db_response[0]:
 					response['status'] = 'Success'
-					response['uid'] = db_response[1]
+					response['aid'] = db_response[1]
 					return home_cor(jsonify(**response))
 		return http_401()
 
@@ -114,7 +114,7 @@ def users_login():
 				db_response = db_functions.login(username, password)
 				if db_response[0]:
 					response['status'] = 'Success'
-					response['uid'] = db_response[1]
+					response['aid'] = db_response[1]
 					return home_cor(jsonify(**response))
 		return http_401()
 
