@@ -24,12 +24,3 @@ function addLoginButton() {
 function addRegisterButton() {
 	$('#dropdown1').append('<li><a href="/auth/signup">Signup</a>');
 }
-
-function getURLs(callback) {
-	$.getJSON('/urls',
-		function (data) {
-			console.log("Cynosural: ", "URLs: ", data);
-			callback(data);
-		}
-	);
-}
