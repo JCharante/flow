@@ -8,3 +8,7 @@ class InsecurePasswordException(Exception):
 
 class UsernameNotUniqueException(Exception):
 	pass
+
+
+class InvalidGroupId(Exception):
+	pass

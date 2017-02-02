@@ -1,5 +1,6 @@
 import bcrypt
 import os
+import random
 
 
 def encrypt_new_password(password):
@@ -19,3 +20,7 @@ def checkpw(stored_password, entered_password):
 
 def secure_password(password):
 	return len(password) > 0
+
+
+def generate_alphanumeric_string(length):
+	return ''.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(length))

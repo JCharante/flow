@@ -43,7 +43,8 @@ def root():
 @app.route('/groups/<group_id>')
 def groups(group_id: str):
 	response = {
-		'create': settings.public_address + '/groups/create?aid=aid_here&name=group_name'
+		'create': settings.public_address + '/groups/create?aid=aid_here&name=group_name',
+		'invite_code': settings.public_address + '/groups/group_id/invite_code'
 	}
 	return home_cor(jsonify(**response))
 
@@ -60,6 +61,22 @@ def groups_create():
 			return http_401('Invalid AID')
 		else:
 			response['group_id'] = group_id
+		return home_cor(jsonify(**response))
+	elif request.method == 'OPTIONS':
+		return home_cor(jsonify(**{}))
+
+
+@app.route('/groups/<group_id>/invite_code', methods=['OPTIONS', 'GET'])
+def groups_group_id(group_id):
+	if request.method == 'GET':
+		response = {}
+		try:
+			invite_code = db_functions.get_invite_code(group_id)
+		except exceptions.InvalidGroupId:
+			return http_401('Invalid Group ID')
+		else:
+			response['success'] = True
+			response['invite_code'] = invite_code
 		return home_cor(jsonify(**response))
 	elif request.method == 'OPTIONS':
 		return home_cor(jsonify(**{}))
