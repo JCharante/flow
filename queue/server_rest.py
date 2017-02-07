@@ -4,6 +4,7 @@ import config
 import util
 import exceptions
 from settings import Settings
+import json
 
 app = Flask(__name__)
 
@@ -24,6 +25,18 @@ def http_401(message=''):
 		return home_cor(Response('Invalid Credentials', 401, {'Erebus': 'error="Invalid Credentials"'}))
 	else:
 		return home_cor(Response(message, 401))
+
+
+@app.errorhandler(400)
+def http_400(code, message, fields):
+	response_object = home_cor(Response(json.dumps({
+		'code': code,
+		'message': message,
+		'fields': fields
+	}), 400))
+	#response_object.headers['Content-Type'] = 'application/json; charset=utf-8'
+	response_object.headers['Content-Type'] = 'application/json'
+	return response_object
 
 
 @app.route('/', methods=['OPTIONS', 'GET'])
@@ -105,8 +118,8 @@ def users(aid: str):
 	if request.method == 'GET':
 		response = {
 			'endpoints': {
-				'username': settings.public_address + f'/users/<aid>/username',
-				'last_login': settings.public_address + '/users/<aid>/last_login',
+				'username': settings.public_address + f'/users/{aid}/username',
+				'last_login': settings.public_address + f'/users/{aid}/last_login',
 				'join': settings.public_address + '/users/join?username=UsernameHere&password=PasswordHere',
 				'login': settings.public_address + '/users/login?username=UsernameHere&password=PasswordHere',
 				'number_of_users': settings.public_address + '/users/quantity'
@@ -166,10 +179,13 @@ def users_login():
 	elif request.method == 'GET':
 		username = request.args.get('username', '')
 		password = request.args.get('password', '')
-		aid = db_functions.login(username, password)
-		response['valid_aid'] = aid[0]
-		response['aid'] = aid[1]
-		return home_cor(jsonify(**response))
+		try:
+			aid = db_functions.login(username, password)
+		except exceptions.InvalidCredentials:
+			return http_400(1, 'Invalid Credentials', 'Username/Password')
+		else:
+			response['aid'] = aid
+			return home_cor(jsonify(**response))
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:

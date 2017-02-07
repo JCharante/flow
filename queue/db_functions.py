@@ -34,13 +34,13 @@ def create_user(username: str, password: str) -> str:
 def login(username: str, password: str) -> Tuple[bool, str]:
 	stored_user = session.query(UserV1).filter(UserV1.username == username).first()
 	if stored_user is None:
-		return False, "username doesn't exist"
+		raise exceptions.InvalidCredentials
 	stored_password = stored_user.hashed_password
 	if util.checkpw(stored_password, password):
 		update_last_login(stored_user.aid)
-		return True, stored_user.aid
+		return stored_user.aid
 	else:
-		return False, "wrong password"
+		raise exceptions.InvalidCredentials()
 
 
 def valid_aid(aid: str) -> bool:
