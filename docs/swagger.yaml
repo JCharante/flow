@@ -1,0 +1,83 @@
+swagger: '2.0'
+info:
+  title: flow API
+  description: flow version - not yet reached
+  version: 0.0.1
+host: localhost:8881
+schemes:
+  - http
+basePath: /
+produces:
+  - application/json
+paths:
+  /users/login:
+    get:
+      summary: Get a user's aid
+      parameters:
+        - name: username
+          in: query
+          description: The username of the user
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        '200':
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
+              valid_aid:
+                type: boolean
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /users/join:
+    get:
+      summary: Create a user account & get the aid
+      parameters:
+        - name: username
+          in: query
+          description: The username of the user
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        '200':
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
+              valid_aid:
+                type: boolean
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
