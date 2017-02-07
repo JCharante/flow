@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: flow API
   description: flow version - not yet reached
-  version: 0.0.1
+  version: 0.1.0
 host: localhost:8881
 schemes:
   - http
@@ -27,7 +27,7 @@ paths:
       tags:
         - Users
       responses:
-        '200':
+        200:
           description: A json object
           schema:
             type: object
@@ -36,10 +36,9 @@ paths:
                 type: string
               valid_aid:
                 type: boolean
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+        400:
+          $ref: '#/responses/400'
+          
   /users/join:
     get:
       summary: Create a user account & get the aid
@@ -57,7 +56,7 @@ paths:
       tags:
         - Users
       responses:
-        '200':
+        200:
           description: A json object
           schema:
             type: object
@@ -66,18 +65,18 @@ paths:
                 type: string
               valid_aid:
                 type: boolean
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-definitions:
-  Error:
-    type: object
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
-      fields:
-        type: string
+        400:
+          $ref: '#/responses/400'
+responses:
+  400:
+    description: Error
+    schema:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        fields:
+          type: string
