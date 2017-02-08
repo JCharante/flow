@@ -61,6 +61,7 @@ def groups(group_id: str):
 	return home_cor(jsonify(**response))
 
 
+"""
 @app.route('/groups/create', methods=['OPTIONS', 'GET'])
 def groups_create():
 	if request.method == 'GET':
@@ -76,6 +77,42 @@ def groups_create():
 		return home_cor(jsonify(**response))
 	elif request.method == 'OPTIONS':
 		return home_cor(jsonify(**{}))
+"""
+
+
+@app.route('/groups/create', methods=['OPTIONS', 'POST', 'GET'])
+def groups_create():
+	response = dict()
+
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+	group_name = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+		group_name = request.args.get('group_name', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+			group_name = data.get('group_name', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+	if group_name is None:
+		return http_400(3, 'Required Parameter is Missing', 'group_name')
+
+	try:
+		group_id = db_functions.create_group(aid, group_name)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+
+	response['group_id'] = group_id
+	return home_cor(jsonify(**response))
 
 
 @app.route('/groups/join/<invite_code>', methods=['OPTIONS', 'GET'])
@@ -287,20 +324,34 @@ def users_last_login():
 	return home_cor(jsonify(**response))
 
 
-@app.route('/users/<aid>/groups', methods=['OPTIONS', 'GET'])
-def users_aid_groups(aid: str):
-	if request.method == 'GET':
-		response = {}
-		try:
-			groups = db_functions.groups_user_is_in(aid)
-		except exceptions.InvalidAid:
-			return http_401('Invalid AID')
-		else:
-			response['groups'] = groups
-		return home_cor(jsonify(**response))
-	else:
-		return home_cor(jsonify(**{}))
+@app.route('/users/groups', methods=['OPTIONS', 'POST', 'GET'])
+def users_groups():
+	response = dict()
 
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+
+	try:
+		groups = db_functions.groups_user_is_in(aid)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+
+	response['groups'] = groups
+	return home_cor(jsonify(**response))
 
 print(f'Using Database: {config.path_to_db}')
 

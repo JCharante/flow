@@ -217,6 +217,120 @@ paths:
                 format: date-time
         400:
           $ref: '#/responses/400'
+  /users/groups:
+    get:
+      summary: Get the groups a user is in.
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    group_id:
+                      type: string
+                    owner:
+                      type: string
+
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the groups a user is in.
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    group_id:
+                      type: string
+                    owner:
+                      type: string
+  /groups/create:
+    get:
+      summary: Create a group
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+        - name: group_name
+          in: query
+          description: The name of the new group
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              group_id:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Create a group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+              group_name:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              group_id:
+                type: string
+        400:
+          $ref: '#/responses/400'
 responses:
   400:
     description: Error
