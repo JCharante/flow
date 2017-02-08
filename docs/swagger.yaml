@@ -1,0 +1,455 @@
+swagger: '2.0'
+info:
+  title: flow API
+  description: flow version - [f4a64ac](https://github.com/JCharante/flow/commit/f4a64ac81251df35ac4f2d8b91588ca60d980a4f)
+  version: 1.0.0
+host: localhost:8881
+schemes:
+  - http
+basePath: /
+produces:
+  - application/json
+paths:
+  /users/login:
+    get:
+      summary: Get the aid of a user
+      parameters:
+        - name: username
+          in: query
+          description: The username of the user
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the aid of a user
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
+        400:
+          $ref: '#/responses/400'
+  /users/join:
+    get:
+      summary: Create a user account
+      parameters:
+        - name: username
+          in: query
+          description: The username of the user
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Create a user account
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
+        400:
+          $ref: '#/responses/400'
+  /users/metrics:
+    get:
+      summary: Get the latest metrics on users
+      responses:
+        200:
+          description: a json object
+          schema:
+            type: object
+            properties:
+              RegisteredUsers:
+                type: number
+  /users/username:
+    get:
+      summary: Get the username of an user
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the username of an user
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+        400:
+          $ref: '#/responses/400'
+  /users/last_login:
+    get:
+      summary: Get the last time a user logged in
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              last_login:
+                type: string
+                format: date-time
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the last time a user logged in
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              last_login:
+                type: string
+                format: date-time
+        400:
+          $ref: '#/responses/400'
+  /users/groups:
+    get:
+      summary: Get the groups a user is in.
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+        - Groups
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    group_id:
+                      type: string
+                    owner:
+                      type: string
+
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the groups a user is in.
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+        - Groups
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    group_id:
+                      type: string
+                    owner:
+                      type: string
+  /groups/create:
+    get:
+      summary: Create a group
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+        - name: group_name
+          in: query
+          description: The name of the new group
+          required: true
+          type: string
+      tags:
+        - Users
+        - Groups
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              group_id:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Create a group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+              group_name:
+                type: string
+      tags:
+        - Users
+        - Groups
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              group_id:
+                type: string
+        400:
+          $ref: '#/responses/400'
+  /groups/invite_code:
+    get:
+      summary: Get the invite code for a group
+      parameters:
+        - name: group_id
+          in: query
+          description: The group id for the group you want the invite code for
+          required: true
+          type: string
+      tags:
+        - Groups
+        - Invite Code
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              invite_code:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the invite code for a group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              group_id:
+                type: string
+      tags:
+        - Groups
+        - Invite Code
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              invite_code:
+                type: string
+        400:
+          $ref: '#/responses/400'
+  /groups/join:
+    get:
+      summary: Have a User join a Group
+      parameters:
+        - name: invite_code
+          in: query
+          description: The invite code for the group you want the user to join
+          required: true
+          type: string
+        - name: aid
+          in: query
+          description: The aid of the user you want to join the group
+          type: string
+          required: true
+      tags:
+        - Groups
+        - Invite Code
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Have a User join a Group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              invite_code:
+                type: string
+              aid:
+                type: string
+      tags:
+        - Groups
+        - Invite Code
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        400:
+          $ref: '#/responses/400'
+responses:
+  400:
+    description: Error
+    schema:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        fields:
+          type: string
