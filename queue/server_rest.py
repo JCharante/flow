@@ -51,7 +51,7 @@ def root():
 	else:
 		return home_cor(jsonify(**{}))
 
-
+"""
 @app.route('/groups/<group_id>')
 def groups(group_id: str):
 	response = {
@@ -59,24 +59,6 @@ def groups(group_id: str):
 		'invite_code': settings.public_address + '/groups/group_id/invite_code'
 	}
 	return home_cor(jsonify(**response))
-
-
-"""
-@app.route('/groups/create', methods=['OPTIONS', 'GET'])
-def groups_create():
-	if request.method == 'GET':
-		response = {}
-		name = request.args.get('name', '')
-		aid = request.args.get('aid', '')
-		try:
-			group_id = db_functions.create_group(aid, name)
-		except exceptions.InvalidAid:
-			return http_401('Invalid AID')
-		else:
-			response['group_id'] = group_id
-		return home_cor(jsonify(**response))
-	elif request.method == 'OPTIONS':
-		return home_cor(jsonify(**{}))
 """
 
 
@@ -147,26 +129,6 @@ def groups_group_id(group_id):
 		return home_cor(jsonify(**response))
 	elif request.method == 'OPTIONS':
 		return home_cor(jsonify(**{}))
-
-"""
-@app.route('/users/<aid>', methods=['OPTIONS', 'GET'])
-def users(aid: str):
-	if request.method == 'GET':
-		response = {
-			'endpoints': {
-				'username': settings.public_address + f'/users/{aid}/username',
-				'last_login': settings.public_address + f'/users/{aid}/last_login',
-				'join': settings.public_address + '/users/join?username=UsernameHere&password=PasswordHere',
-				'login': settings.public_address + '/users/login?username=UsernameHere&password=PasswordHere',
-				'metrics': settings.public_address + '/users/metrics'
-			}
-		}
-		if settings.dev_mode:
-			response['endpoints']['wipe_users'] = settings.public_address + '/users/wipe'
-		return home_cor(jsonify(**response))
-	else:
-		return home_cor(jsonify(**{}))
-"""
 
 
 @app.route('/users/join', methods=['POST', 'OPTIONS', 'GET'])
