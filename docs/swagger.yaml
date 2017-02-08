@@ -228,6 +228,7 @@ paths:
           type: string
       tags:
         - Users
+        - Groups
       responses:
         200:
           description: A json object
@@ -262,6 +263,7 @@ paths:
                 type: string
       tags:
         - Users
+        - Groups
       responses:
         200:
           description: A json object
@@ -295,6 +297,7 @@ paths:
           type: string
       tags:
         - Users
+        - Groups
       responses:
         200:
           description: A json object
@@ -321,6 +324,7 @@ paths:
                 type: string
       tags:
         - Users
+        - Groups
       responses:
         200:
           description: A json object
@@ -341,6 +345,8 @@ paths:
           required: true
           type: string
       tags:
+        - Groups
+        - Invite Code
         - Users
       responses:
         200:
@@ -365,6 +371,8 @@ paths:
               group_id:
                 type: string
       tags:
+        - Groups
+        - Invite Code
         - Users
       responses:
         200:
