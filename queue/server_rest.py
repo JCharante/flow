@@ -121,7 +121,7 @@ def users(aid: str):
 				'last_login': settings.public_address + f'/users/{aid}/last_login',
 				'join': settings.public_address + '/users/join?username=UsernameHere&password=PasswordHere',
 				'login': settings.public_address + '/users/login?username=UsernameHere&password=PasswordHere',
-				'number_of_users': settings.public_address + '/users/quantity'
+				'metrics': settings.public_address + '/users/metrics'
 			}
 		}
 		if settings.dev_mode:
@@ -217,10 +217,10 @@ def users_wipe():
 		}))
 
 
-@app.route('/users/quantity')
+@app.route('/users/metrics')
 def users_quantity():
 	return home_cor(jsonify(**{
-		'number_of_users': db_functions.number_of_users()
+		'RegisteredUsers': db_functions.number_of_users()
 	}))
 
 

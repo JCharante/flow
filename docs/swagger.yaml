@@ -115,6 +115,19 @@ paths:
                 type: string
         400:
           $ref: '#/responses/400'
+
+  /users/metrics:
+    get:
+      summary: Get the latest metrics on users
+      responses:
+        200:
+          description: a json object
+          schema:
+            type: object
+            properties:
+              RegisteredUsers:
+                type: number
+
 responses:
   400:
     description: Error
