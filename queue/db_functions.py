@@ -120,7 +120,9 @@ def get_invite_code(group_id: str):
 	return group.invite_code
 
 
-def join_group_through_invite_link(aid: str, invite_code: str):
+def join_group_invite_code(aid: str, invite_code: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
 	group = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
 	if group is None:
 		raise exceptions.InvalidGroupInviteCode()
