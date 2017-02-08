@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: flow API
   description: flow version - not yet reached
-  version: 0.1.0
+  version: 0.1.1
 host: localhost:8881
 schemes:
   - http
@@ -12,7 +12,7 @@ produces:
 paths:
   /users/login:
     get:
-      summary: Get a user's aid
+      summary: Get the aid of a user
       parameters:
         - name: username
           in: query
@@ -37,7 +37,7 @@ paths:
         400:
           $ref: '#/responses/400'
     post:
-      summary: Create a user account & get the aid
+      summary: Get the aid of a user
       consumes:
         - application/json
       parameters:
@@ -62,10 +62,9 @@ paths:
                 type: string
         400:
           $ref: '#/responses/400'
-          
   /users/join:
     get:
-      summary: Create a user account & get the aid
+      summary: Create a user account
       parameters:
         - name: username
           in: query
@@ -90,7 +89,7 @@ paths:
         400:
           $ref: '#/responses/400'
     post:
-      summary: Create a user account & get the aid
+      summary: Create a user account
       consumes:
         - application/json
       parameters:
@@ -115,7 +114,6 @@ paths:
                 type: string
         400:
           $ref: '#/responses/400'
-
   /users/metrics:
     get:
       summary: Get the latest metrics on users
@@ -127,7 +125,51 @@ paths:
             properties:
               RegisteredUsers:
                 type: number
-
+  /users/username:
+    get:
+      summary: Get the username of an user
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the username of an user
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+        400:
+          $ref: '#/responses/400'
 responses:
   400:
     description: Error
