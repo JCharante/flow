@@ -384,6 +384,62 @@ paths:
                 type: string
         400:
           $ref: '#/responses/400'
+  /groups/join:
+    get:
+      summary: Have a User join a Group
+      parameters:
+        - name: invite_code
+          in: query
+          description: The invite code for the group you want the user to join
+          required: true
+          type: string
+        - name: aid
+          in: query
+          description: The aid of the user you want to join the group
+          type: string
+          required: true
+      tags:
+        - Groups
+        - Invite Code
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Have a User join a Group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              invite_code:
+                type: string
+              aid:
+                type: string
+      tags:
+        - Groups
+        - Invite Code
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        400:
+          $ref: '#/responses/400'
 responses:
   400:
     description: Error
