@@ -256,21 +256,35 @@ def users_username():
 	return home_cor(jsonify(**response))
 
 
-@app.route('/users/<aid>/last_login', methods=['OPTIONS', 'GET'])
-def users_last_login(aid: str):
+@app.route('/users/last_login', methods=['OPTIONS', 'GET', 'POST'])
+def users_last_login():
+	response = dict()
+
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+
 	if request.method == 'GET':
-		response = {}
-		try:
-			last_login = db_functions.get_last_login(aid)
-		except exceptions.InvalidAid:
-			response['valid_aid'] = False
+		aid = request.args.get('aid', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
 		else:
-			response['last_login'] = last_login
-			response['valid_aid'] = True
-		finally:
-			return home_cor(jsonify(**response))
-	else:
-		return home_cor(jsonify(**{}))
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+
+	aid = aid  # type: str
+	try:
+		last_login = db_functions.get_last_login(aid)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+
+	response['last_login'] = last_login
+	return home_cor(jsonify(**response))
 
 
 @app.route('/users/<aid>/groups', methods=['OPTIONS', 'GET'])

@@ -170,6 +170,53 @@ paths:
                 type: string
         400:
           $ref: '#/responses/400'
+  /users/last_login:
+    get:
+      summary: Get the last time a user logged in
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              last_login:
+                type: string
+                format: date-time
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the last time a user logged in
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              last_login:
+                type: string
+                format: date-time
+        400:
+          $ref: '#/responses/400'
 responses:
   400:
     description: Error
