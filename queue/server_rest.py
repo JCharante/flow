@@ -34,7 +34,6 @@ def http_400(code, message, fields):
 		'message': message,
 		'fields': fields
 	}), 400))
-	#response_object.headers['Content-Type'] = 'application/json; charset=utf-8'
 	response_object.headers['Content-Type'] = 'application/json'
 	return response_object
 
@@ -138,39 +137,35 @@ def users_join():
 
 	if request.method == 'OPTIONS':
 		return home_cor(jsonify(**response))
-	elif request.method == 'GET':
-		username = request.args.get('username', '')
-		password = request.args.get('password', '')
 
-		try:
-			db_response = db_functions.create_user(username, password)
-		except exceptions.UsernameNotUniqueException:
-			return http_401('Username Taken.')
-		except exceptions.InsecurePasswordException:
-			return http_401('Insecure Password Used')
-		else:
-			response['status'] = 'Success'
-			response['aid'] = db_response
-			return home_cor(jsonify(**response))
+	username = None
+	password = None
+
+	if request.method == 'GET':
+		username = request.args.get('username', None)
+		password = request.args.get('password', None)
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:
 			username = data.get('username', None)
 			password = data.get('password', None)
-			if username is None:
-				return http_400(3, 'Required Parameter is Missing', 'username')
-			if password is None:
-				return http_400(3, 'Required Parameter is MIssing', 'password')
-			try:
-				aid = db_functions.create_user(username, password)
-			except exceptions.UsernameNotUniqueException:
-				return http_400(4, 'Username Taken', 'username')
-			except exceptions.InsecurePasswordException:
-				return http_400(5, 'Password Is Too Weak', 'password')
-			response['aid'] = aid
-			return home_cor(jsonify(**response))
 		else:
 			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if username is None:
+		return http_400(3, 'Required Parameter is Missing', 'username')
+	if password is None:
+		return http_400(3, 'Required Parameter is Missing', 'password')
+
+	try:
+		aid = db_functions.create_user(username, password)
+	except exceptions.UsernameNotUniqueException:
+		return http_400(4, 'Username Taken', 'username')
+	except exceptions.InsecurePasswordException:
+		return http_400(5, 'Password Is Too Weak', 'password')
+
+	response['aid'] = aid
+	return home_cor(jsonify(**response))
 
 
 @app.route('/users/login', methods=['POST', 'OPTIONS', 'GET'])
@@ -179,28 +174,33 @@ def users_login():
 
 	if request.method == 'OPTIONS':
 		return home_cor(jsonify(**response))
-	elif request.method == 'GET':
-		username = request.args.get('username', '')
-		password = request.args.get('password', '')
-		try:
-			aid = db_functions.login(username, password)
-		except exceptions.InvalidCredentials:
-			return http_400(1, 'Invalid Credentials', 'Username/Password')
-		else:
-			response['aid'] = aid
-			return home_cor(jsonify(**response))
+
+	username = None
+	password = None
+
+	if request.method == 'GET':
+		username = request.args.get('username', None)
+		password = request.args.get('password', None)
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:
 			username = data.get('username', None)
 			password = data.get('password', None)
-			if username is not None and password is not None:
-				db_response = db_functions.login(username, password)
-				if db_response[0]:
-					response['status'] = 'Success'
-					response['aid'] = db_response[1]
-					return home_cor(jsonify(**response))
-		return http_401()
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if username is None:
+		return http_400(3, 'Required Parameter is Missing', 'username')
+	if password is None:
+		return http_400(3, 'Required Parameter is Missing', 'password')
+
+	try:
+		aid = db_functions.login(username, password)
+	except exceptions.InvalidCredentials:
+		return http_400(1, 'Invalid Credentials', 'Username/Password')
+
+	response['aid'] = aid
+	return home_cor(jsonify(**response))
 
 
 @app.route('/users/wipe')

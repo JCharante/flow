@@ -34,8 +34,32 @@ paths:
             properties:
               aid:
                 type: string
-              valid_aid:
-                type: boolean
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Create a user account & get the aid
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              aid:
+                type: string
         400:
           $ref: '#/responses/400'
           
@@ -63,8 +87,6 @@ paths:
             properties:
               aid:
                 type: string
-              valid_aid:
-                type: boolean
         400:
           $ref: '#/responses/400'
     post:
@@ -91,8 +113,6 @@ paths:
             properties:
               aid:
                 type: string
-              valid_aid:
-                type: boolean
         400:
           $ref: '#/responses/400'
 responses:
