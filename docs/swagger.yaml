@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: flow API
   description: flow version - not yet reached
-  version: 0.1.1
+  version: 0.1.2
 host: localhost:8881
 schemes:
   - http
@@ -328,6 +328,51 @@ paths:
             type: object
             properties:
               group_id:
+                type: string
+        400:
+          $ref: '#/responses/400'
+  /groups/invite_code:
+    get:
+      summary: Get the invite code for a group
+      parameters:
+        - name: group_id
+          in: query
+          description: The group id for the group you want the invite code for
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              invite_code:
+                type: string
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the invite code for a group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              group_id:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              invite_code:
                 type: string
         400:
           $ref: '#/responses/400'
