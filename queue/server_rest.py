@@ -155,19 +155,22 @@ def users_join():
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:
-			username = data.get('username', '')
-			password = data.get('password', '')
+			username = data.get('username', None)
+			password = data.get('password', None)
+			if username is None:
+				return http_400(3, 'Required Parameter is Missing', 'username')
+			if password is None:
+				return http_400(3, 'Required Parameter is MIssing', 'password')
 			try:
-				db_response = db_functions.create_user(username, password)
+				aid = db_functions.create_user(username, password)
 			except exceptions.UsernameNotUniqueException:
-				return http_401('Username Taken.')
+				return http_400(4, 'Username Taken', 'username')
 			except exceptions.InsecurePasswordException:
-				return http_401('Insecure Password Used')
-			else:
-				response['status'] = 'Success'
-				response['aid'] = db_response
-				return home_cor(jsonify(**response))
-		return http_401()
+				return http_400(5, 'Password Is Too Weak', 'password')
+			response['aid'] = aid
+			return home_cor(jsonify(**response))
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
 
 
 @app.route('/users/login', methods=['POST', 'OPTIONS', 'GET'])
