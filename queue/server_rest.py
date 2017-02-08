@@ -38,30 +38,6 @@ def http_400(code, message, fields):
 	return response_object
 
 
-@app.route('/', methods=['OPTIONS', 'GET'])
-def root():
-	if request.method == 'GET':
-		response = {
-			'endpoints': {
-				'users': settings.public_address + '/users/aid_here',
-				'groups': settings.public_address + '/groups/group_id'
-			}
-		}
-		return home_cor(jsonify(**response))
-	else:
-		return home_cor(jsonify(**{}))
-
-"""
-@app.route('/groups/<group_id>')
-def groups(group_id: str):
-	response = {
-		'create': settings.public_address + '/groups/create?aid=aid_here&name=group_name',
-		'invite_code': settings.public_address + '/groups/group_id/invite_code'
-	}
-	return home_cor(jsonify(**response))
-"""
-
-
 @app.route('/groups/create', methods=['OPTIONS', 'POST', 'GET'])
 def groups_create():
 	response = dict()
@@ -97,22 +73,41 @@ def groups_create():
 	return home_cor(jsonify(**response))
 
 
-@app.route('/groups/join/<invite_code>', methods=['OPTIONS', 'GET'])
-def groups_join(invite_code):
-	if request.method == 'GET':
-		response = {}
-		aid = request.args.get('aid', '')
-		try:
-			db_functions.join_group_through_invite_link(aid, invite_code)
-		except exceptions.InvalidAid:
-			return http_401('Invalid AID')
-		except exceptions.InvalidGroupInviteCode:
-			return http_401('Invalid Invite Code')
-		else:
-			response['success'] = True
+@app.route('/groups/join', methods=['OPTIONS', 'GET', 'POST'])
+def groups_join():
+	response = dict()
+
+	if request.method == 'OPTIONS':
 		return home_cor(jsonify(**response))
-	elif request.method == 'OPTIONS':
-		return home_cor(jsonify(**{}))
+
+	aid = None
+	invite_code = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+		invite_code = request.args.get('invite_code', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+			invite_code = data.get('invite_code', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+	if invite_code is None:
+		return http_400(3, 'Required Parameter is Missing', 'invite_code')
+
+	try:
+		db_functions.join_group_invite_code(aid, invite_code)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+	except exceptions.InvalidGroupInviteCode:
+		return http_400(7, 'Invalid Group Invite Code', 'invite_code')
+
+	response['success'] = True
+	return home_cor(jsonify(**response))
 
 
 @app.route('/groups/invite_code', methods=['OPTIONS', 'GET', 'POST'])
