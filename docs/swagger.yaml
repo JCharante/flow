@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
   title: flow API
-  description: flow version - not yet reached
-  version: 0.1.2
+  description: flow version - [f4a64ac](https://github.com/JCharante/flow/commit/f4a64ac81251df35ac4f2d8b91588ca60d980a4f)
+  version: 1.0.0
 host: localhost:8881
 schemes:
   - http
