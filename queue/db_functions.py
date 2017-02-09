@@ -34,13 +34,13 @@ def create_user(username: str, password: str) -> str:
 def login(username: str, password: str) -> Tuple[bool, str]:
 	stored_user = session.query(UserV1).filter(UserV1.username == username).first()
 	if stored_user is None:
-		return False, "username doesn't exist"
+		raise exceptions.InvalidCredentials
 	stored_password = stored_user.hashed_password
 	if util.checkpw(stored_password, password):
 		update_last_login(stored_user.aid)
-		return True, stored_user.aid
+		return stored_user.aid
 	else:
-		return False, "wrong password"
+		raise exceptions.InvalidCredentials()
 
 
 def valid_aid(aid: str) -> bool:
@@ -120,7 +120,9 @@ def get_invite_code(group_id: str):
 	return group.invite_code
 
 
-def join_group_through_invite_link(aid: str, invite_code: str):
+def join_group_invite_code(aid: str, invite_code: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
 	group = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
 	if group is None:
 		raise exceptions.InvalidGroupInviteCode()
@@ -137,6 +139,18 @@ def join_group(aid: str, group_id):
 		group_id=group_id,
 		member_aid=aid
 	))
+	session.commit()
+
+
+def leave_group(aid: str, group_id: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	if is_valid_group_id(group_id) is False:
+		raise exceptions.InvalidGroupId()
+	membership = session.query(GroupMemberV1).filter(GroupMemberV1.group_id == group_id).filter(GroupMemberV1.member_aid == aid).first()
+	if membership is None:
+		raise exceptions.AlreadyNotAGroupMember()
+	session.query(GroupMemberV1).filter(GroupMemberV1.group_id == group_id).filter(GroupMemberV1.member_aid == aid).delete()
 	session.commit()
 
 

@@ -16,3 +16,11 @@ class InvalidGroupId(Exception):
 
 class InvalidGroupInviteCode(Exception):
 	pass
+
+
+class InvalidCredentials(Exception):
+	pass
+
+
+class AlreadyNotAGroupMember(Exception):
+	pass

@@ -4,8 +4,13 @@ Contribution Guide
 ## Etiquette
 
 * When you need to use a branch, use the naming scheme `#{issue_number}`. This will lead to branch names `#3`, `#23`, `#245`
-* Have an empty line at the end of all files (excluding `.json`)
 * **Don't commit directly into the master branch**
+* When you add or modify a route in the restful api, you **must** update swagger in a future commit, and link to the commit page on github from swagger.
+
+## Style
+
+* Have an empty line at the end of all files (exclusing `*.json`)
+* Use tabs (except for `*.yaml`, use 2 spaces)
 
 ## Useful Tools
 
