@@ -3,7 +3,7 @@ Vue.component('group', {
 	props: ['name', 'owner', 'groupId'],
 	template:
 	'<div class="col s12 m6 l4 group">' +
-		'<p>Group Name  : [[ name ]]</p>' +
+		'<h3 class="center">[[ name ]]</h3>' +
 		'<p>Group Owner : [[ owner ]]</p>' +
 		'<p>Group ID    : [[ groupId ]]</p>' +
 	'</div>'
@@ -46,7 +46,9 @@ Vue.component('groups', {
 			});
 		});
 	},
-	template: '<div id="groups" class="row"><group v-for="group in groups" v-bind:name="group.name" v-bind:owner="group.owner" v-bind:group-id="group.group_id"></group></div>',
+	template: '<div id="groups" class="row">' +
+		'<group v-for="group in groups" v-bind:name="group.name" v-bind:owner="group.owner" v-bind:group-id="group.group_id"></group>' +
+	'</div>',
 	data: function () {
 		return {
 			groups: []
