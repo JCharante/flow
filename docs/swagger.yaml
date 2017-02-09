@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
   title: flow API
-  description: flow version - [f4a64ac](https://github.com/JCharante/flow/commit/f4a64ac81251df35ac4f2d8b91588ca60d980a4f)
-  version: 1.0.0
+  description: flow version - [cc1a3f8](https://github.com/JCharante/flow/commit/cc1a3f8639c09dc5593c3041e2a3e7b5d49a6a21)
+  version: 1.1.0
 host: localhost:8881
 schemes:
   - http
@@ -333,6 +333,60 @@ paths:
             properties:
               group_id:
                 type: string
+        400:
+          $ref: '#/responses/400'
+  /groups/leave:
+    get:
+      summary: Create a group
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+        - name: group_id
+          in: query
+          description: The group id
+          required: true
+          type: string
+      tags:
+        - Users
+        - Groups
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Create a group
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+              group_id:
+                type: string
+      tags:
+        - Users
+        - Groups
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
         400:
           $ref: '#/responses/400'
   /groups/invite_code:
