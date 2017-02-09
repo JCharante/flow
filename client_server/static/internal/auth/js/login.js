@@ -1,5 +1,5 @@
 function onceDocumentReady() {
-	getURLs(startSubmitButtonListener)
+	getURLs(startSubmitButtonListener);
 }
 
 function startSubmitButtonListener() {
@@ -17,21 +17,19 @@ function startSubmitButtonListener() {
 			data: JSON.stringify(data),
 			dataType: "json",
 			contentType: "application/json",
-			success: function (data) {
-				if (data['status'] == 'Success') {
-					Materialize.toast("Logged in", 2000, 'rounded light-green accent-4');
-					setAID(data['aid']);
+			statusCode: {
+				200: function (data) {
+					console.log('Server Replied: ', data);
+					Materialize.toast("Logged in", 1250, 'rounded light-green accent-4');
+					setAID(data.aid);
 					redirectToHomePage();
-				} else {
-					console.log(data);
-				}
-			},
-			error: function (jqXHR, exception) {
-				if (jqXHR.status === 401) {
-					Materialize.toast('Invalid Credentials', 1500, 'rounded red accent-4');
-				} else {
-					Materialize.toast('flow May Be Down Right Now :(', 1500, 'rounded red accent-4');
-					console.log('Unknown Error. \n ' + jqXHR.responseText);
+				},
+				400: function (responseObject) {
+					console.log('Server Replied: ', responseObject);
+					data = responseObject.responseJSON;
+					if (data.code == 1) {
+						Materialize.toast(data.message, 1250, 'rounded red accent-4');
+					}
 				}
 			}
 		});
