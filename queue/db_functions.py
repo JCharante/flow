@@ -142,6 +142,18 @@ def join_group(aid: str, group_id):
 	session.commit()
 
 
+def leave_group(aid: str, group_id: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	if is_valid_group_id(group_id) is False:
+		raise exceptions.InvalidGroupId()
+	membership = session.query(GroupMemberV1).filter(GroupMemberV1.group_id == group_id).filter(GroupMemberV1.member_aid == aid).first()
+	if membership is None:
+		raise exceptions.AlreadyNotAGroupMember()
+	session.query(GroupMemberV1).filter(GroupMemberV1.group_id == group_id).filter(GroupMemberV1.member_aid == aid).delete()
+	session.commit()
+
+
 def is_valid_group_id(group_id: str):
 	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
 	return group is not None

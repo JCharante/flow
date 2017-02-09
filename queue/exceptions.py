@@ -20,3 +20,7 @@ class InvalidGroupInviteCode(Exception):
 
 class InvalidCredentials(Exception):
 	pass
+
+
+class AlreadyNotAGroupMember(Exception):
+	pass
