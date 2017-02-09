@@ -17,7 +17,7 @@
 	<div class="nav-wrapper light-blue lighten-2">
 		<a href="#" class="brand-logo" id="nav-brand-logo">flow</a>
 		<ul class="right hide-on-med-and-down">
-			<li><a href="#">My Groups</a></li>
+			<li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
 			<!-- Dropdown Trigger -->
 			<li>
 				<a class="dropdown-button" href="#" data-activates="dropdown1">
@@ -31,9 +31,12 @@
 {% block body %} {%  endblock %}
 
 <script src="{{ url_for('static', filename='external/js/jquery-2.1.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='external/js/vue.js') }}"></script>
 <script src="{{ url_for('static', filename='external/js/materialize.min.js') }}"></script>
 <script src="{{ url_for('static', filename='internal/util/js/aid.js') }}"></script>
 <script src="{{ url_for('static', filename='internal/util/js/get_auth_server_address.js') }}"></script>
 <script src="{{ url_for('static', filename='internal/navbar/js/script.js') }}"></script>
+
+{% block scripts %} {% endblock %}
 </body>
 </html>
