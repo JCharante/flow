@@ -19,14 +19,6 @@ def home_cor(obj):
 	return return_response
 
 
-@app.errorhandler(401)
-def http_401(message=''):
-	if message == '':
-		return home_cor(Response('Invalid Credentials', 401, {'Erebus': 'error="Invalid Credentials"'}))
-	else:
-		return home_cor(Response(message, 401))
-
-
 @app.errorhandler(400)
 def http_400(code: int, message: str, fields: str):
 	"""
