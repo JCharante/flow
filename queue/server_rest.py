@@ -28,7 +28,22 @@ def http_401(message=''):
 
 
 @app.errorhandler(400)
-def http_400(code, message, fields):
+def http_400(code: int, message: str, fields: str):
+	"""
+
+	:param code: The error code
+	:param message: A message explaining the error
+	:param fields: The variable
+	:return:
+	"""
+	"""
+	Error Codes:
+	2 - json body in post request missing
+	3 - Missing Required Field
+	6 - Invalid AID
+	7 - Invalid Group ID
+	8 - Can't leave existing group
+	"""
 	response_object = home_cor(Response(json.dumps({
 		'code': code,
 		'message': message,
@@ -105,6 +120,45 @@ def groups_join():
 		return http_400(6, 'Invalid AID', 'aid')
 	except exceptions.InvalidGroupInviteCode:
 		return http_400(7, 'Invalid Group Invite Code', 'invite_code')
+
+	response['success'] = True
+	return home_cor(jsonify(**response))
+
+
+@app.route('/groups/leave', methods=['OPTIONS', 'GET', 'POST'])
+def groups_leave():
+	response = dict()
+
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+	group_id = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+		group_id = request.args.get('group_id', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+			group_id = data.get('group_id', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+	if group_id is None:
+		return http_400(3, 'Required Parameter is Missing', 'group_id')
+
+	try:
+		db_functions.leave_group(aid, group_id)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+	except exceptions.InvalidGroupId:
+		return http_400(7, 'Invalid Group ID', 'group_id')
+	except exceptions.AlreadyNotAGroupMember:
+		return http_400(8, 'Can\'t leave a group you\'re not in', 'group_id')
 
 	response['success'] = True
 	return home_cor(jsonify(**response))
