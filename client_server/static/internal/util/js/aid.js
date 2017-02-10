@@ -2,6 +2,10 @@ function redirectToHomePage() {
 	window.location.replace('/');
 }
 
+function redirectToDashboard() {
+	window.location.replace('/dashboard');
+}
+
 function hasAnAidValue() {
 	var aid = localStorage.getItem('aid') || null;
 	return null != aid;
