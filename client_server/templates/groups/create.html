@@ -1,0 +1,26 @@
+{% extends "navbar/base.html" %}
+
+{% block title %}
+	flow - Create Group
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<div class="row">
+			<div class="row">
+				<div class="input-field col s12">
+					<input placeholder="Group Name" id="group_name" type="text" class="validate">
+					<label for="group_name">Group Name</label>
+				</div>
+				<button id="submit" class="btn waves-effect waves-light" type="submit" name="action">Create
+					<i class="material-icons right">send</i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+	<script src="{{ url_for('static', filename='internal/groups/create/js/script.js') }}"></script>
+{% endblock %}

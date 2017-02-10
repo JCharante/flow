@@ -24,6 +24,11 @@ def dashboard():
 	return render_template('dashboard/dashboard.html')
 
 
+@app.route('/groups/create')
+def groups_create():
+	return render_template('groups/create.html')
+
+
 @app.route('/auth/login')
 def auth_login():
 	return render_template('auth/login.html')
