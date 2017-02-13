@@ -30,8 +30,11 @@ def http_400(code: int, message: str, fields: str):
 	"""
 	"""
 	Error Codes:
+	1 - Invalid Credentials
 	2 - json body in post request missing
 	3 - Missing Required Field
+	4 - Username not Unique
+	5 - Insecure Password (Probably blank)
 	6 - Invalid AID
 	7 - Invalid Group ID
 	8 - Can't leave existing group
