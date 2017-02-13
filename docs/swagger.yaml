@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
   title: flow API
-  description: flow version - [cc1a3f8](https://github.com/JCharante/flow/commit/cc1a3f8639c09dc5593c3041e2a3e7b5d49a6a21)
-  version: 1.1.0
+  description: flow version - [51b213d](https://github.com/JCharante/flow/commit/51b213d490b9f4e233682bb1a5af8d7a419a7ee3)
+  version: 1.2.0
 host: localhost:8881
 schemes:
   - http
@@ -168,6 +168,51 @@ paths:
             properties:
               username:
                 type: string
+        400:
+          $ref: '#/responses/400'
+  /users/leave:
+    get:
+      summary: Delete a user
+      parameters:
+        - name: aid
+          in: query
+          description: The aid of the user
+          required: true
+          type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        400:
+          $ref: '#/responses/400'
+    post:
+      summary: Get the username of an user
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              aid:
+                type: string
+      tags:
+        - Users
+      responses:
+        200:
+          description: A json object
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
         400:
           $ref: '#/responses/400'
   /users/last_login:

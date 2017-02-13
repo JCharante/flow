@@ -313,6 +313,37 @@ def users_username():
 	return home_cor(jsonify(**response))
 
 
+@app.route('/users/leave', methods=['OPTIONS', 'GET', 'POST'])
+def users_leave():
+	response = dict()
+
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+
+	aid = aid  # type: str
+	try:
+		db_functions.delete_user(aid)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+
+	response['success'] = True
+	return home_cor(jsonify(**response))
+
+
 @app.route('/users/last_login', methods=['OPTIONS', 'GET', 'POST'])
 def users_last_login():
 	response = dict()
