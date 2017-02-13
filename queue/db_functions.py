@@ -154,6 +154,21 @@ def leave_group(aid: str, group_id: str):
 	session.commit()
 
 
+def remove_user_from_groups(aid: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	session.query(GroupMemberV1).filter(GroupMemberV1.member_aid == aid).delete()
+	session.commit()
+
+
+def delete_user(aid: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	remove_user_from_groups(aid)
+	session.query(UserV1).filter(UserV1.aid == aid).delete()
+	session.commit()
+
+
 def is_valid_group_id(group_id: str):
 	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
 	return group is not None
