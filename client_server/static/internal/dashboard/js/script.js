@@ -51,8 +51,9 @@ Vue.component('groups', {
 			});
 		});
 	},
-	template: '<div id="groups" class="row">' +
-	'<group v-for="group in groups" v-bind:name="group.name" v-bind:owner="group.owner" v-bind:group-id="group.group_id"></group>' +
+	template:
+	'<div id="groups" class="row">' +
+		'<group v-for="group in groups" v-bind:name="group.name" v-bind:owner="group.owner" v-bind:group-id="group.group_id"></group>' +
 	'</div>',
 	data: function () {
 		return {
