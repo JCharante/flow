@@ -1,9 +1,6 @@
 Vue.component('group', {
 	delimiters: ['[[', ']]'],
 	props: ['name', 'owner', 'groupId'],
-	generateGroupPageLink: function(groupId) {
-		return '/groups/group?group_id=' + groupId;
-	},
 	computed: {
 		groupPageLink: function () {
 			return '/groups/group?group_id=' + this.groupId;
