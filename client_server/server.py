@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response, abort, Response, render_template
+from flask import Flask, request, jsonify, make_response, abort, Response, render_template, url_for
 from settings import Settings
 import util
 
@@ -27,6 +27,16 @@ def dashboard():
 @app.route('/groups/create')
 def groups_create():
 	return render_template('groups/create.html')
+
+
+@app.route('/groups/join')
+def groups_join():
+	return render_template('groups/join.html')
+
+
+@app.route('/groups/group')
+def groups_group():
+	return render_template('groups/group.html')
 
 
 @app.route('/auth/login')

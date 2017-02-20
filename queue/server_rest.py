@@ -38,6 +38,7 @@ def http_400(code: int, message: str, fields: str):
 	6 - Invalid AID
 	7 - Invalid Group ID
 	8 - Can't leave existing group
+	9 - Can't join a group that you're a member of
 	"""
 	response_object = home_cor(Response(json.dumps({
 		'code': code,
@@ -115,6 +116,8 @@ def groups_join():
 		return http_400(6, 'Invalid AID', 'aid')
 	except exceptions.InvalidGroupInviteCode:
 		return http_400(7, 'Invalid Group Invite Code', 'invite_code')
+	except exceptions.AlreadyAGroupMember:
+		return http_400(9, 'Already In Group', 'aid')
 
 	response['success'] = True
 	return home_cor(jsonify(**response))
@@ -402,6 +405,45 @@ def users_groups():
 		return http_400(6, 'Invalid AID', 'aid')
 
 	response['groups'] = groups
+	return home_cor(jsonify(**response))
+
+
+@app.route('/groups/details', methods=['OPTIONS', 'POST', 'GET'])
+def groups_details():
+	response = dict()
+
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+	group_id = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+		group_id = request.args.get('group_id', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+			group_id = data.get('group_id', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+	if group_id is None:
+		return http_400(3, 'Required Parameter is Missing', 'group_id')
+
+	try:
+		details = db_functions.get_group_details(aid, group_id)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+	except exceptions.InvalidGroupId:
+		return http_400(7, 'Invalid Group ID', 'group_id')
+	except exceptions.NotAGroupMember:
+		return http_400(8, 'You need to be in this group to perform this action', 'group_id')
+
+	response['group'] = details
 	return home_cor(jsonify(**response))
 
 print(f'Using Database: {config.path_to_db}')

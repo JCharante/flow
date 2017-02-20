@@ -24,3 +24,15 @@ class InvalidCredentials(Exception):
 
 class AlreadyNotAGroupMember(Exception):
 	pass
+
+
+class NotAGroupMember(Exception):
+	pass
+
+
+class GroupDoesNotExist(Exception):
+	pass
+
+
+class AlreadyAGroupMember(Exception):
+	pass

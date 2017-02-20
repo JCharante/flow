@@ -124,6 +124,8 @@ def join_group_invite_code(aid: str, invite_code: str):
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	group = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
+	if is_group_member(aid, group.group_id):
+		raise exceptions.AlreadyAGroupMember()
 	if group is None:
 		raise exceptions.InvalidGroupInviteCode()
 	group = group  # type: GroupV1
@@ -192,3 +194,38 @@ def groups_user_is_in(aid: str) -> List[Dict]:
 				'owner': group_owner_username
 			})
 	return groups
+
+
+def is_group_member(aid: str, group_id: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	if is_valid_group_id(group_id) is False:
+		raise exceptions.InvalidGroupId()
+	membership = session.query(GroupMemberV1).filter(GroupMemberV1.member_aid == aid).filter(GroupMemberV1.group_id == group_id).first()
+	return membership is not None
+
+
+def get_group_details(aid: str, group_id: str):
+	if valid_aid(aid) is False:
+		raise exceptions.InvalidAid()
+	if is_valid_group_id(group_id) is False:
+		raise exceptions.InvalidGroupId()
+	if is_group_member(aid, group_id) is False:
+		raise exceptions.NotAGroupMember()
+
+	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
+
+	if group is None:
+		raise exceptions.GroupDoesNotExist()
+
+	try:
+		group_owner_username = get_username(group.owner_aid)
+	except exceptions.InvalidAid:
+		group_owner_username = 'Error Fetching Owner'
+
+	return {
+		'name': group.name,
+		'owner': group_owner_username,
+		'group_id': group.group_id,
+		'invite_code': group.invite_code
+	}
