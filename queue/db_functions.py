@@ -124,6 +124,8 @@ def join_group_invite_code(aid: str, invite_code: str):
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	group = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
+	if is_group_member(aid, group.group_id):
+		raise exceptions.AlreadyAGroupMember()
 	if group is None:
 		raise exceptions.InvalidGroupInviteCode()
 	group = group  # type: GroupV1

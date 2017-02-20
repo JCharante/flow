@@ -13,6 +13,9 @@ function main() {
 			statusCode: {
 				200: function (data) {
 					redirectToDashboard()
+				},
+				400: function (data) {
+					redirectToDashboard()
 				}
 			}
 		})

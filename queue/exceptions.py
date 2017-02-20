@@ -32,3 +32,7 @@ class NotAGroupMember(Exception):
 
 class GroupDoesNotExist(Exception):
 	pass
+
+
+class AlreadyAGroupMember(Exception):
+	pass

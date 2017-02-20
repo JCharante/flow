@@ -38,6 +38,7 @@ def http_400(code: int, message: str, fields: str):
 	6 - Invalid AID
 	7 - Invalid Group ID
 	8 - Can't leave existing group
+	9 - Can't join a group that you're a member of
 	"""
 	response_object = home_cor(Response(json.dumps({
 		'code': code,
@@ -115,6 +116,8 @@ def groups_join():
 		return http_400(6, 'Invalid AID', 'aid')
 	except exceptions.InvalidGroupInviteCode:
 		return http_400(7, 'Invalid Group Invite Code', 'invite_code')
+	except exceptions.AlreadyAGroupMember:
+		return http_400(9, 'Already In Group', 'aid')
 
 	response['success'] = True
 	return home_cor(jsonify(**response))
