@@ -404,6 +404,45 @@ def users_groups():
 	response['groups'] = groups
 	return home_cor(jsonify(**response))
 
+
+@app.route('/groups/details', methods=['OPTIONS', 'POST', 'GET'])
+def groups_details():
+	response = dict()
+
+	if request.method == 'OPTIONS':
+		return home_cor(jsonify(**response))
+
+	aid = None
+	group_id = None
+
+	if request.method == 'GET':
+		aid = request.args.get('aid', None)
+		group_id = request.args.get('group_id', None)
+	elif request.method == 'POST':
+		data = request.json
+		if data is not None:
+			aid = data.get('aid', None)
+			group_id = data.get('group_id', None)
+		else:
+			return http_400(2, 'Required JSON Object Not Sent', 'body')
+
+	if aid is None:
+		return http_400(3, 'Required Parameter is Missing', 'aid')
+	if group_id is None:
+		return http_400(3, 'Required Parameter is Missing', 'group_id')
+
+	try:
+		details = db_functions.get_group_details(aid, group_id)
+	except exceptions.InvalidAid:
+		return http_400(6, 'Invalid AID', 'aid')
+	except exceptions.InvalidGroupId:
+		return http_400(7, 'Invalid Group ID', 'group_id')
+	except exceptions.NotAGroupMember:
+		return http_400(8, 'You need to be in this group to perform this action', 'group_id')
+
+	response['group'] = details
+	return home_cor(jsonify(**response))
+
 print(f'Using Database: {config.path_to_db}')
 
 app.run(debug=True, host='0.0.0.0', port=8881)
