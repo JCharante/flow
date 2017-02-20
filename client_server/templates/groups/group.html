@@ -1,0 +1,21 @@
+{% extends "navbar/base.html" %}
+
+{% block title %}
+flow - Dashboard
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='internal/dashboard/css/style.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+	<div id="group-page"></div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='internal/groups/group/js/script.js') }}"></script>
+{% endblock %}
