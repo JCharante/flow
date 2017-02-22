@@ -3,14 +3,14 @@ import websockets
 import util
 import db_functions
 import exceptions
-from typing import Dict, List
+from typing import Dict, List, Set
 
 
 class Group:
 	def __init__(self, group_id: str, server: 'QueueWebsocketServer'):
 		self.group_id = group_id
 		self.server = server
-		self.listeners = set()
+		self.listeners = set()  # type: Set[ConnectedClient]
 		self.queue = []  # type: List[QueueTicket]
 
 	def add_listener(self, listener):
@@ -19,10 +19,36 @@ class Group:
 	def remove_listener(self, listener):
 		self.listeners.remove(listener)
 
+	async def join_queue(self, username: str):
+		self.queue.append(QueueTicket(username, self.group_id))
+		await self.push_queue_updates()
+
+	async def leave_queue(self, username: str):
+		val = None
+		for ticket in self.queue:
+			if ticket.username == username:
+				val = ticket
+			break
+		self.queue.remove(val)
+		await self.push_queue_updates()
+
+	def queue_to_dict(self):
+		obj = dict()
+		obj['in_queue'] = []
+		for ticket in self.queue:
+			obj['in_queue'].append({
+				'username': ticket.username
+			})
+		return obj
+
+	async def push_queue_updates(self):
+		for listener in self.listeners:
+			await listener.send_json(self.queue_to_dict())
+
 
 class QueueTicket:
-	def __init__(self, aid: str, group_id: str):
-		self.aid = aid
+	def __init__(self, username: str, group_id: str):
+		self.username = username
 		self.group_id = group_id
 
 
@@ -46,7 +72,6 @@ class ConnectedClient:
 		})
 
 	def set_active_group(self, group_id):
-		self.active_group = group_id
 		if self.server.groups.get(group_id, None) is None:
 			try:
 				self.server.initialize_group(group_id)
@@ -54,7 +79,7 @@ class ConnectedClient:
 				print(repr(e))
 		group = self.server.groups.get(group_id, None)
 		if group is not None:
-			group = group  # type: Group
+			self.active_group = group  # type: Group
 			group.add_listener(self)
 
 	async def on_message(self, message):
@@ -67,6 +92,7 @@ class ConnectedClient:
 			if db_functions.valid_aid(aid):
 				self.authenticated = True
 				self.aid = aid
+				self.username = db_functions.get_username(aid)
 				await self.send_json({
 					'authenticated': True
 				})
@@ -99,9 +125,11 @@ class ConnectedClient:
 						return
 					self.set_active_group(group_id)
 					await self.send_json({
-						'active_group': self.active_group
+						'active_group': group_id
 					})
 					return
+			elif request == 'join_queue':
+				await self.active_group.join_queue(self.username)
 
 
 class QueueWebsocketServer:
