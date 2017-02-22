@@ -1,6 +1,7 @@
 import bcrypt
 import os
 import random
+import json
 
 
 def encrypt_new_password(password):
@@ -24,3 +25,17 @@ def secure_password(password):
 
 def generate_alphanumeric_string(length):
 	return ''.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(length))
+
+
+def loads(x: str):
+	try:
+		return json.loads(x)
+	except:
+		return {}
+
+
+def dumps(x: dict):
+	try:
+		return json.dumps(x)
+	except:
+		return "{}"
