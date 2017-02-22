@@ -1,3 +1,5 @@
+# I know this isn't real rest, but your neither is your api.
+
 from flask import Flask, request, jsonify, make_response, abort, Response, url_for
 import db_functions
 import config
@@ -5,6 +7,7 @@ import util
 import exceptions
 from settings import Settings
 import json
+from typing import Dict, List
 
 app = Flask(__name__)
 
@@ -65,6 +68,7 @@ def groups_create():
 	elif request.method == 'POST':
 		data = request.json
 		if data is not None:
+			data = data  # type: Dict
 			aid = data.get('aid', None)
 			group_name = data.get('group_name', None)
 		else:
@@ -76,6 +80,8 @@ def groups_create():
 		return http_400(3, 'Required Parameter is Missing', 'group_name')
 
 	try:
+		aid = aid  # str
+		group_name = group_name  # str
 		group_id = db_functions.create_group(aid, group_name)
 	except exceptions.InvalidAid:
 		return http_400(6, 'Invalid AID', 'aid')
