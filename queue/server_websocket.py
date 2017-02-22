@@ -3,6 +3,27 @@ import websockets
 import util
 import db_functions
 import exceptions
+from typing import Dict, List
+
+
+class Group:
+	def __init__(self, group_id: str, server: 'QueueWebsocketServer'):
+		self.group_id = group_id
+		self.server = server
+		self.listeners = set()
+		self.queue = []  # type: List[QueueTicket]
+
+	def add_listener(self, listener):
+		self.listeners.add(listener)
+
+	def remove_listener(self, listener):
+		self.listeners.remove(listener)
+
+
+class QueueTicket:
+	def __init__(self, aid: str, group_id: str):
+		self.aid = aid
+		self.group_id = group_id
 
 
 class ConnectedClient:
@@ -24,6 +45,18 @@ class ConnectedClient:
 			'fields': fields
 		})
 
+	def set_active_group(self, group_id):
+		self.active_group = group_id
+		if self.server.groups.get(group_id, None) is None:
+			try:
+				self.server.initialize_group(group_id)
+			except Exception as e:
+				print(repr(e))
+		group = self.server.groups.get(group_id, None)
+		if group is not None:
+			group = group  # type: Group
+			group.add_listener(self)
+
 	async def on_message(self, message):
 		data = util.loads(message)
 		if self.authenticated is False:
@@ -33,6 +66,7 @@ class ConnectedClient:
 				return
 			if db_functions.valid_aid(aid):
 				self.authenticated = True
+				self.aid = aid
 				await self.send_json({
 					'authenticated': True
 				})
@@ -63,7 +97,7 @@ class ConnectedClient:
 					if is_group_member is False:
 						await self.send_error(4, 'You are not in this group', 'group_id')
 						return
-					self.active_group = group_id
+					self.set_active_group(group_id)
 					await self.send_json({
 						'active_group': self.active_group
 					})
@@ -72,7 +106,7 @@ class ConnectedClient:
 
 class QueueWebsocketServer:
 	def __init__(self, port=8883):
-		self.groups = {}
+		self.groups = {}  # type: Dict[str, Group]
 		self.connected_clients = set()
 		self.port = port
 
@@ -88,6 +122,14 @@ class QueueWebsocketServer:
 
 		asyncio.get_event_loop().run_until_complete(start_server)
 		asyncio.get_event_loop().run_forever()
+
+	def initialize_group(self, group_id):
+		if db_functions.is_valid_group_id(group_id) is False:
+			raise exceptions.InvalidGroupId()
+		if self.groups.get(group_id, None) is not None:
+			raise exceptions.GroupAlreadyInitialized()
+		group = Group(group_id, self)
+		self.groups[group_id] = group
 
 	async def on_new_connection(self, websocket, path):
 		print(f'New Connection | {websocket.remote_address}')

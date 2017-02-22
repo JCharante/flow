@@ -36,3 +36,7 @@ class GroupDoesNotExist(Exception):
 
 class AlreadyAGroupMember(Exception):
 	pass
+
+
+class GroupAlreadyInitialized(Exception):
+	pass
