@@ -3,6 +3,7 @@ import websockets
 import util
 import db_functions
 import exceptions
+import datetime
 from typing import Dict, List, Set
 
 
@@ -37,7 +38,8 @@ class Group:
 		obj['in_queue'] = []
 		for ticket in self.queue:
 			obj['in_queue'].append({
-				'username': ticket.username
+				'username': ticket.username,
+				'in_queue_since': ticket.in_queue_since
 			})
 		return obj
 
@@ -50,6 +52,7 @@ class QueueTicket:
 	def __init__(self, username: str, group_id: str):
 		self.username = username
 		self.group_id = group_id
+		self.in_queue_since = datetime.datetime.utcnow().isoformat()
 
 
 class ConnectedClient:
@@ -129,7 +132,11 @@ class ConnectedClient:
 					})
 					return
 			elif request == 'join_queue':
-				await self.active_group.join_queue(self.username)
+				if self.active_group is not None:
+					await self.active_group.join_queue(self.username)
+			elif request == 'leave_queue':
+				if self.active_group is not None:
+					await self.active_group.leave_queue(self.username)
 
 
 class QueueWebsocketServer:
