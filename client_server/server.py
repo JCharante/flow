@@ -67,7 +67,8 @@ def version():
 @app.route('/urls')
 def urls():
 	return home_cor(jsonify(**{
-		'auth_server_address': settings.auth_server_address
+		'auth_server_address': settings.auth_server_address,
+		'websocket_server_address': settings.websocket_server_address
 	}))
 
 
