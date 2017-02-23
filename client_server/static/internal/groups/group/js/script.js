@@ -44,6 +44,8 @@ Vue.component('queue', {
 				} else if (json.request === 'queue update') {
 					console.log(json.in_queue);
 					self.$data.in_queue = json.in_queue;
+				} else {
+					console.log(json);
 				}
 
 			} catch (e) {
@@ -65,12 +67,7 @@ Vue.component('queue', {
 	},
 	data: function() {
 		return {
-			in_queue: [
-				{
-					username: 'bob',
-					inQueueSince: '12am'
-				}
-			]
+			in_queue: []
 		}
 	},
 	template:
