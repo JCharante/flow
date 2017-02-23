@@ -14,15 +14,23 @@ class Group:
 		self.listeners = set()  # type: Set[ConnectedClient]
 		self.queue = []  # type: List[QueueTicket]
 
-	def add_listener(self, listener):
+	async def add_listener(self, listener):
 		self.listeners.add(listener)
+		await self.push_queue_update_to_listener(listener)
 
 	def remove_listener(self, listener):
 		self.listeners.remove(listener)
 
 	async def join_queue(self, username: str):
-		self.queue.append(QueueTicket(username, self.group_id))
-		await self.push_queue_updates()
+		if self.is_in_queue(username) is False:
+			self.queue.append(QueueTicket(username, self.group_id))
+			await self.push_queue_updates()
+
+	def is_in_queue(self, username: str):
+		for ticket in self.queue:
+			if ticket.username == username:
+				return True
+		return False
 
 	async def leave_queue(self, username: str):
 		val = None
@@ -33,19 +41,31 @@ class Group:
 		self.queue.remove(val)
 		await self.push_queue_updates()
 
-	def queue_to_dict(self):
-		obj = dict()
-		obj['in_queue'] = []
-		for ticket in self.queue:
-			obj['in_queue'].append({
+	def queue_to_array(self):
+		queue = []
+		for i in range(len(self.queue)):
+			ticket = self.queue[i]
+			queue.append({
 				'username': ticket.username,
-				'in_queue_since': ticket.in_queue_since
+				'inQueueSince': ticket.in_queue_since,
+				'position': i + 1
 			})
-		return obj
+		return queue
+
+	async def push_queue_update_to_listener(self, listener: 'ConnectedClient'):
+		message = {
+			'request': 'queue update',
+			'in_queue': self.queue_to_array()
+		}
+		await listener.send_json(message)
 
 	async def push_queue_updates(self):
+		message = {
+			'request': 'queue update',
+			'in_queue': self.queue_to_array()
+		}
 		for listener in self.listeners:
-			await listener.send_json(self.queue_to_dict())
+			await listener.send_json(message)
 
 
 class QueueTicket:
@@ -64,8 +84,16 @@ class ConnectedClient:
 		self.authenticated = False
 		self.active_group = None
 
+	async def on_disconnect(self):
+		self.active_group.remove_listener(self)
+		await self.active_group.leave_queue(self.username)
+		self.server.connected_clients.remove(self)
+
 	async def send_json(self, x: dict):
-		await self.socket.send(util.dumps(x))
+		try:
+			await self.socket.send(util.dumps(x))
+		except Exception as e:
+			print(repr(e))
 
 	async def send_error(self, code, message, fields):
 		await self.send_json({
@@ -74,7 +102,7 @@ class ConnectedClient:
 			'fields': fields
 		})
 
-	def set_active_group(self, group_id):
+	async def set_active_group(self, group_id):
 		if self.server.groups.get(group_id, None) is None:
 			try:
 				self.server.initialize_group(group_id)
@@ -83,7 +111,7 @@ class ConnectedClient:
 		group = self.server.groups.get(group_id, None)
 		if group is not None:
 			self.active_group = group  # type: Group
-			group.add_listener(self)
+			await group.add_listener(self)
 
 	async def on_message(self, message):
 		data = util.loads(message)
@@ -97,6 +125,7 @@ class ConnectedClient:
 				self.aid = aid
 				self.username = db_functions.get_username(aid)
 				await self.send_json({
+					'request': 'authentication update',
 					'authenticated': True
 				})
 				self.server.connected_clients.add(self)
@@ -126,8 +155,9 @@ class ConnectedClient:
 					if is_group_member is False:
 						await self.send_error(4, 'You are not in this group', 'group_id')
 						return
-					self.set_active_group(group_id)
+					await self.set_active_group(group_id)
 					await self.send_json({
+						'request': 'switch active group confirmation',
 						'active_group': group_id
 					})
 					return
@@ -177,7 +207,7 @@ class QueueWebsocketServer:
 			pass
 		finally:
 			try:
-				self.connected_clients.remove(connected_client)
+				await connected_client.on_disconnect()
 			except:
 				pass
 			print(f'Connection Closed | {websocket.remote_address}')

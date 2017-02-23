@@ -8,6 +8,7 @@ class Settings:
 		self.read_settings()
 
 		self.auth_server_address = self.settings.get('auth_server_address', '')
+		self.websocket_server_address = self.settings.get('websocket_server_address', '')
 
 	def read_settings(self):
 		with open(util.path_to_this_files_directory() + 'settings.json') as json_data:

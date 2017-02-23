@@ -1,0 +1,12 @@
+.out-of-queue {
+    background: green;
+}
+
+.in-queue {
+    background: red;
+}
+
+#queueToggle {
+    width: 100%;
+    height: 100px;
+}
