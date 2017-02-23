@@ -22,8 +22,15 @@ class Group:
 		self.listeners.remove(listener)
 
 	async def join_queue(self, username: str):
-		self.queue.append(QueueTicket(username, self.group_id))
-		await self.push_queue_updates()
+		if self.is_in_queue(username) is False:
+			self.queue.append(QueueTicket(username, self.group_id))
+			await self.push_queue_updates()
+
+	def is_in_queue(self, username: str):
+		for ticket in self.queue:
+			if ticket.username == username:
+				return True
+		return False
 
 	async def leave_queue(self, username: str):
 		val = None
@@ -198,7 +205,7 @@ class QueueWebsocketServer:
 			pass
 		finally:
 			try:
-				self.connected_clients.on_disconnect()
+				await connected_client.on_disconnect()
 			except:
 				pass
 			print(f'Connection Closed | {websocket.remote_address}')
