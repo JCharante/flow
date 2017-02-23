@@ -75,8 +75,16 @@ class ConnectedClient:
 		self.authenticated = False
 		self.active_group = None
 
+	async def on_disconnect(self):
+		self.active_group.remove_listener(self)
+		await self.active_group.leave_queue(self.username)
+		self.server.connected_clients.remove(self)
+
 	async def send_json(self, x: dict):
-		await self.socket.send(util.dumps(x))
+		try:
+			await self.socket.send(util.dumps(x))
+		except Exception as e:
+			print(repr(e))
 
 	async def send_error(self, code, message, fields):
 		await self.send_json({
@@ -190,7 +198,7 @@ class QueueWebsocketServer:
 			pass
 		finally:
 			try:
-				self.connected_clients.remove(connected_client)
+				self.connected_clients.on_disconnect()
 			except:
 				pass
 			print(f'Connection Closed | {websocket.remote_address}')

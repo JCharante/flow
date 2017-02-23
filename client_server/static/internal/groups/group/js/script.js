@@ -1,8 +1,15 @@
 Vue.component('queue-row', {
 	props: ['name', 'inQueueSince'],
-	computed: {
-		timeSinceInQueue: function(dateString) {
-			return moment.utc(dateString).toNow(true);
+	mounted: function() {
+		var self = this;
+
+        setInterval(function() {
+            self.$data.timeSinceInQueue = moment.utc(self.inQueueSince).toNow(true) + ' ago';
+        }, 1000);
+	},
+	data: function() {
+		return {
+			timeSinceInQueue: '0 seconds ago'
 		}
 	},
 	template:
@@ -73,8 +80,8 @@ Vue.component('queue', {
 			'<thead>' +
 				'<tr>' +
 					'<th data-field="id">Name</th>' +
-					'<th data-field="name">Waiting Since</th>' +
-					'<th data-field="price">Rank</th>' +
+					'<th data-field="name">Joined the Queue</th>' +
+					'<th data-field="price">Place in Line</th>' +
 				'</tr>' +
 			'</thead>' +
 
