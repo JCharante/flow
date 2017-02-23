@@ -43,10 +43,12 @@ class Group:
 
 	def queue_to_array(self):
 		queue = []
-		for ticket in self.queue:
+		for i in range(len(self.queue)):
+			ticket = self.queue[i]
 			queue.append({
 				'username': ticket.username,
-				'inQueueSince': ticket.in_queue_since
+				'inQueueSince': ticket.in_queue_since,
+				'position': i + 1
 			})
 		return queue
 

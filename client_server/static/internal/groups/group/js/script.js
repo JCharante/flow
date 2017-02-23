@@ -1,5 +1,5 @@
 Vue.component('queue-row', {
-	props: ['name', 'inQueueSince'],
+	props: ['name', 'inQueueSince', 'position'],
 	mounted: function() {
 		var self = this;
 
@@ -9,14 +9,14 @@ Vue.component('queue-row', {
 	},
 	data: function() {
 		return {
-			timeSinceInQueue: '0 seconds ago'
+			timeSinceInQueue: 'just now'
 		}
 	},
 	template:
 	'<tr>' +
 		'<td>{{ name }}</td>' +
 		'<td>{{ timeSinceInQueue }}</td>' +
-		'<td></td>' +
+		'<td>#{{ position }}</td>' +
 	'</tr>'
 });
 
@@ -63,6 +63,27 @@ Vue.component('queue', {
 				request: 'join_queue'
 			}));
 			successAlert('Joined the Queue', 1500);
+		});
+
+		var queueToggle = $('#queueToggle');
+
+		queueToggle.click(function() {
+			var text = queueToggle.text();
+			if (text === 'Leave Queue') {
+				ws.send(JSON.stringify({
+					request: 'leave_queue'
+				}));
+				queueToggle.removeClass('in-queue');
+				queueToggle.addClass('out-of-queue');
+				queueToggle.text('Join Queue');
+			} else if (text === 'Join Queue') {
+				ws.send(JSON.stringify({
+					request: 'join_queue'
+				}));
+				queueToggle.removeClass('out-of-queue');
+				queueToggle.addClass('in-queue');
+				queueToggle.text('Leave Queue');
+			}
 		})
 	},
 	data: function() {
@@ -83,7 +104,7 @@ Vue.component('queue', {
 			'</thead>' +
 
 			'<tbody>' +
-				'<queue-row v-for="ticket in in_queue" v-bind:name="ticket.username" v-bind:in-queue-since="ticket.inQueueSince"></queue-row>' +
+				'<queue-row v-for="ticket in in_queue" :position="ticket.position" v-bind:name="ticket.username" v-bind:in-queue-since="ticket.inQueueSince"></queue-row>' +
 			'</tbody>' +
 		'</table>' +
 		'<a id="join-queue">Join Queue</a>' +
@@ -128,8 +149,11 @@ Vue.component('group-page', {
 			'</h3>' +
 			'<h3>[[ group.invite_code ]]</h3>' +
 		'</div>' +
-		'<div class="col l8">' +
+		'<div class="col l7">' +
 			'<queue></queue>' +
+		'</div>' +
+		'<div class="col l1">' +
+			'<div id="queueToggle" class="out-of-queue">Join Queue</div>' +
 		'</div>' +
 	'</div>',
 	data: function () {
