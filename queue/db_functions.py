@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from db_setup import UserV1, Base, GroupV1, GroupMemberV1
 import util
 import config
@@ -12,10 +12,10 @@ import exceptions
 engine = create_engine(config.path_to_db)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
 
 def create_user(username: str, password: str) -> str:
+	session = DBSession()
 	if util.secure_password(password) is False:
 		raise exceptions.InsecurePasswordException()
 	if session.query(UserV1).filter(UserV1.username == username).first() is not None:
@@ -32,6 +32,7 @@ def create_user(username: str, password: str) -> str:
 
 
 def login(username: str, password: str) -> Tuple[bool, str]:
+	session = DBSession()
 	stored_user = session.query(UserV1).filter(UserV1.username == username).first()
 	if stored_user is None:
 		raise exceptions.InvalidCredentials
@@ -44,11 +45,13 @@ def login(username: str, password: str) -> Tuple[bool, str]:
 
 
 def valid_aid(aid: str) -> bool:
+	session = DBSession()
 	stored_user = session.query(UserV1).filter(UserV1.aid == aid).first()
 	return stored_user is not None
 
 
 def get_username(aid: str) -> str:
+	session = DBSession()
 	row = session.query(UserV1).filter(UserV1.aid == aid).first()
 	if row is not None:
 		return row.username
@@ -57,6 +60,7 @@ def get_username(aid: str) -> str:
 
 
 def update_last_login(aid: str) -> None:
+	session = DBSession()
 	user = session.query(UserV1).filter(UserV1.aid == aid).first()
 	if user is not None:
 		user.last_login = datetime.now()
@@ -64,6 +68,7 @@ def update_last_login(aid: str) -> None:
 
 
 def get_last_login(aid: str) -> str:
+	session = DBSession()
 	row = session.query(UserV1).filter(UserV1.aid == aid).first()
 	if row is not None:
 		row = row  # type: UserV1
@@ -73,15 +78,18 @@ def get_last_login(aid: str) -> str:
 
 
 def number_of_users():
+	session = DBSession()
 	return session.query(UserV1).count()
 
 
 def wipe_users():
+	session = DBSession()
 	session.query(UserV1).filter(True).delete()
 	session.commit()
 
 
 def create_group(owner_aid: str, group_name: str):
+	session = DBSession()
 	if valid_aid(owner_aid) is False:
 		raise exceptions.InvalidAid()
 	group_id = str(uuid.uuid4())
@@ -102,6 +110,7 @@ def create_group(owner_aid: str, group_name: str):
 
 
 def generate_unique_group_invite_code():
+	session = DBSession()
 	invite_code = util.generate_alphanumeric_string(6)
 	while invite_code_is_unique(invite_code) is False:
 		invite_code = util.generate_alphanumeric_string(6)
@@ -109,11 +118,13 @@ def generate_unique_group_invite_code():
 
 
 def invite_code_is_unique(invite_code: str):
+	session = DBSession()
 	row = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
 	return row is None
 
 
 def get_invite_code(group_id: str):
+	session = DBSession()
 	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
 	if group is None:
 		raise exceptions.InvalidGroupId()
@@ -121,6 +132,7 @@ def get_invite_code(group_id: str):
 
 
 def join_group_invite_code(aid: str, invite_code: str):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	group = session.query(GroupV1).filter(GroupV1.invite_code == invite_code).first()
@@ -133,6 +145,7 @@ def join_group_invite_code(aid: str, invite_code: str):
 
 
 def join_group(aid: str, group_id):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	if is_valid_group_id(group_id) is False:
@@ -145,6 +158,7 @@ def join_group(aid: str, group_id):
 
 
 def leave_group(aid: str, group_id: str):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	if is_valid_group_id(group_id) is False:
@@ -157,6 +171,7 @@ def leave_group(aid: str, group_id: str):
 
 
 def remove_user_from_groups(aid: str):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	session.query(GroupMemberV1).filter(GroupMemberV1.member_aid == aid).delete()
@@ -164,6 +179,7 @@ def remove_user_from_groups(aid: str):
 
 
 def delete_user(aid: str):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	remove_user_from_groups(aid)
@@ -172,11 +188,13 @@ def delete_user(aid: str):
 
 
 def is_valid_group_id(group_id: str):
+	session = DBSession()
 	group = session.query(GroupV1).filter(GroupV1.group_id == group_id).first()
 	return group is not None
 
 
 def groups_user_is_in(aid: str) -> List[Dict]:
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	groups = []
@@ -197,6 +215,7 @@ def groups_user_is_in(aid: str) -> List[Dict]:
 
 
 def is_group_member(aid: str, group_id: str):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	if is_valid_group_id(group_id) is False:
@@ -206,6 +225,7 @@ def is_group_member(aid: str, group_id: str):
 
 
 def get_group_details(aid: str, group_id: str):
+	session = DBSession()
 	if valid_aid(aid) is False:
 		raise exceptions.InvalidAid()
 	if is_valid_group_id(group_id) is False:
