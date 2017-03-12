@@ -42,3 +42,63 @@ pip install -r requirements.txt
 ```
 python server.py
 ```
+
+Run with Docker
+===============
+
+(Aimed at hosting locally)
+
+##### 1. Install the dependencies
+
+On Ubuntu 16.04:
+
+```
+sudo apt install docker.io
+```
+
+##### 2. Set the directory of this file as your active directory.
+
+##### 3. Build the docker image
+
+
+```
+sudo docker build -t client_server-img .
+```
+
+##### 4. Run the docker image in a container
+
+```
+sudo docker run -d -p 8882:8882 --restart=always --name client_server client_server-img
+```
+
+##### 5. To find out the address
+
+```
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' client_server
+```
+
+Then go to the address in the output with the port 8882 in your browser.
+
+By default http://0.0.0.0:8882 should work.
+
+##### To stop & delete the container
+
+```
+sudo docker stop client_server
+sudo docker rm client_server
+```
+
+##### To update the container to new code
+
+```
+# Stopping & Deleting the container
+sudo docker stop client_server
+sudo docker rm client_server
+# Rebuilding image
+sudo docker rmi client_server-img
+sudo docker build -t client_server-img .
+# Launching the container
+sudo docker run -d -p 8882:8882 --restart=always --name client_server client_server-img
+# Getting the address
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' client_server
+```
